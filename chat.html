@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ちゃっと</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.js"></script>
+  </head>
+  <body>
+    <p id="title"></p>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>送信</button>
+    </form>
+    <script>
+      const socket = io();
+      const name = getName();
+      $('#title').append(name + "で入室しました");
+
+      // サーバへ
+      $('form').submit(() => {
+        var array = [name, $('#m').val()];
+        console.log('message: ' + array[0]);
+        socket.emit('chat message', array);
+        $('#m').val('');
+        return false;
+      });
+
+      //うけとり
+       socket.on('chat message', (array) => {
+            $('#messages').append($('<li>').text(array[0] + " : " + array[1]));
+        });
+
+
+       function getName() {
+          var url   = decodeURI(location.href);
+          parameters    = url.split("?");
+          params   = parameters[1].split("&");
+          var paramsArray = [];
+          for ( i = 0; i < params.length; i++ ) {
+             neet = params[i].split("=");
+             paramsArray.push(neet[0]);
+             paramsArray[neet[0]] = neet[1];
+          }
+          var categoryKey = paramsArray["name"];
+          return categoryKey;
+       }
+
+    </script>
+
+  </body>
+</html>
